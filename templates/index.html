@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code gerador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: #fff;
+            text-align: center;
+        }
+        h1 {
+            color: #d83215;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #000;
+        }
+        input[type="text"], input[type="color"], button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #d83215;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #d83215;
+        }
+        .hidden {
+            display: none;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            border: 2px solid #000;
+            border-radius: 4px;
+        }
+        a {
+            color: #d83215;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='img/vo-1--unscreen.gif') }}" alt="" style="border: none; margin-top: 2rem; width: 250px;">
+        <h1>Gerador de QR Code </h1>
+        <form id="qrForm" action="/" method="POST">
+            <label for="url">Adicione o link:</label>
+            <input type="text" id="url" name="url" placeholder="Enter URL" required>
+
+            <label for="fill_color">Selecione a cor do QR Code:</label>
+            <input type="color" id="fill_color" name="fill_color" value="#000000">
+
+            <label for="back_color">Selecione o fundo do QR Code:</label>
+            <input type="color" id="back_color" name="back_color" value="#ffffff">
+
+            <button type="submit">Gerar QR-Code</button>
+        </form>
+
+        <div id="qrResult" class="hidden">
+            <h2>Seu QR Code:</h2>
+            <img id="qrcodeImage" src="" alt="QR Code">
+            <br>
+            <a id="downloadLink" href="" download="qrcode.png" class="hidden">Baixar QR Code</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('qrForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var form = event.target;
+            var formData = new FormData(form);
+
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                var url = URL.createObjectURL(blob);
+                document.getElementById('qrcodeImage').src = url;
+                document.getElementById('downloadLink').href = url;
+                document.getElementById('downloadLink').classList.remove('hidden');
+                document.getElementById('qrResult').classList.remove('hidden');
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
